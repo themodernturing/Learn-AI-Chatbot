@@ -722,7 +722,9 @@ def show_speaker(text):
     logging.debug(f"show_speaker took {time.time() - start_time} seconds")
     return result
 
+# Import modern fonts and responsive rules
 css = """
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans:wght@400;700&display=swap');
 .input-panel {
     background-color: #e7f5ff;
     padding: 15px;
@@ -746,7 +748,7 @@ css = """
 }
 #response_output textarea, #fun_fact_output textarea {
     font-size: 1.2em !important;
-    font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif !important;
+    font-family: 'Inter', 'Noto Sans', 'Comic Sans MS', 'Comic Sans', cursive, sans-serif !important;
     color: #222;
     background: #fffbe6;
     font-weight: bold;
@@ -778,6 +780,15 @@ css = """
     color: #555;
     margin-top: 10px;
     font-style: italic;
+}
+@media (max-width: 768px) {
+    .gr-row {
+        flex-direction: column !important;
+    }
+    .input-panel,
+    .output-panel {
+        width: 100% !important;
+    }
 }
 """
 
@@ -870,6 +881,26 @@ Revolutionizing Education for Grades 3 to 6""")
 <br>
 <em>We respect your privacy. No student data is stored or shared.</em>
 </div>"""
+    )
+    gr.HTML(
+        """
+        <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const labels = {
+                'speak_button': 'Listen to response',
+                'speak_funfact_btn': 'Listen to fun fact',
+                'ask_button': 'Submit question'
+            };
+            Object.entries(labels).forEach(([id, label]) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const btn = el.querySelector('button') || el;
+                    btn.setAttribute('aria-label', label);
+                }
+            });
+        });
+        </script>
+        """
     )
 
     grade.change(
