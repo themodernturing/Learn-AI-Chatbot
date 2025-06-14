@@ -272,17 +272,19 @@ def exit_ai_mode(grade, subject):
     global_state["conversation_history"] = []
     global_state["topic_cache"] = {}
     global_state["fun_fact_cache"] = {}
-    logging.debug("Exiting AI mode: Resetting UI and updating input state")
+    new_subject = "Math"
+    global_state["subject"] = new_subject
+    logging.debug("Exiting AI mode: Resetting UI, switching subject to Math and updating input state")
     reset_outputs = (
         "",  # response_output
         "",  # fun_fact_output
-        gr.update(value="", interactive=False, placeholder="🎯 Please select your grade and subject first to enable the Ask Now! button."),  # question_input
+        gr.update(value="", interactive=False, placeholder="🎯 Please select your grade and subject first to enable the Ask Now! button.", visible=True),  # question_input
         None,  # audio_input reset
         gr.update(value="🎈 Show Me a Fun Fact!", visible=False),  # fun_fact_btn
         gr.update(interactive=False),  # ask_btn
         "<div style='font-size: 5em; text-align: center;'>🤖</div>",  # avatar
         grade,  # grade (retain current value)
-        subject,  # subject (retain current value)
+        new_subject,  # switch subject to Math
         gr.update(visible=False),  # speak_btn
         gr.update(visible=False),  # audio_out
         gr.update(visible=False),  # speak_funfact_btn
@@ -297,7 +299,7 @@ def exit_ai_mode(grade, subject):
         gr.update(value="", visible=False),  # next_instruction
         gr.update(visible=False)   # clear_output_btn
     )
-    input_state = update_input_state(grade, subject)
+    input_state = update_input_state(grade, new_subject)
     logging.debug(f"exit_ai_mode took {time.time() - start_time} seconds")
     return reset_outputs + input_state
 
@@ -627,7 +629,7 @@ def update_input_state(grade, subject):
     if grade_valid and subject_valid and not is_ai_mode:
         logging.debug("Normal mode: Hiding AI buttons")
         result = (
-            gr.update(interactive=True, placeholder="❓ Ask your question here (in English or Roman Urdu), then press Enter!"),
+            gr.update(interactive=True, placeholder="❓ Ask your question here (in English or Roman Urdu), then press Enter!", visible=True),
             gr.update(interactive=True),
             gr.update(visible=False),
             gr.update(visible=False),
@@ -638,7 +640,7 @@ def update_input_state(grade, subject):
     elif grade_valid and subject_valid and is_ai_mode:
         logging.debug("AI mode: Showing AI buttons")
         result = (
-            gr.update(interactive=False, placeholder="🤖 You're in AI Learning Mode! Use the buttons on the right to explore AI concepts."),
+            gr.update(interactive=False, placeholder="🤖 You're in AI Learning Mode! Use the buttons on the right to explore AI concepts.", visible=False),
             gr.update(interactive=False),
             gr.update(visible=False),
             gr.update(visible=True),
@@ -650,7 +652,7 @@ def update_input_state(grade, subject):
         logging.debug("Invalid selection: Hiding all buttons")
         placeholder = "🎯 Please select your grade and subject first to enable the Ask Now! button."
         result = (
-            gr.update(interactive=False, placeholder=placeholder),
+            gr.update(interactive=False, placeholder=placeholder, visible=True),
             gr.update(interactive=False),
             gr.update(visible=False),
             gr.update(visible=False),
@@ -673,7 +675,7 @@ def clear_all(grade, subject):
     reset_outputs = (
         "",  # response_output
         "",  # fun_fact_output
-        gr.update(value="", interactive=False, placeholder="🎯 Please select your grade and subject first to enable the Ask Now! button."),
+        gr.update(value="", interactive=False, placeholder="🎯 Please select your grade and subject first to enable the Ask Now! button.", visible=True),
         None,  # audio_input reset
         gr.update(value="🎈 Show Me a Fun Fact!", visible=False),  # fun_fact_btn
         gr.update(interactive=False),
@@ -757,7 +759,7 @@ css = """
     background: #fffbe6 !important;
 }
 #response_output textarea:contains('🎯 Please select a grade first!') {
-    background: #e7f5ff !important; /* Blue background like input panel */
+    background: #e7f5ff !important; /* Blue background like input panel*/
     font-size: 1.5em !important; /* Larger font for visibility */
     text-align: center !important; /* Center the text */
     color: #007bff !important; /* Blue text for emphasis */
@@ -864,10 +866,10 @@ Revolutionizing Education for Grades 3 to 6""")
 
     gr.Markdown(
         """<div class='footer-note' role='contentinfo'>
-    <strong>Made with ❤️ by <a href='https://astramentors.co' target='_blank'>Astra Mentors</a> | Contact: <a href='mailto:ceo@astramentors.com'>ceo@astramentors.com</a></strong>
-    <br>
-    <em>We respect your privacy. No student data is stored or shared.</em>
-    </div>"""
+<strong>Made with ❤️ by <a href='https://astramentors.co' target='_blank'>Astra Mentors</a> | Contact: <a href='mailto:ceo@astramentors.com'>ceo@astramentors.com</a></strong>
+<br>
+<em>We respect your privacy. No student data is stored or shared.</em>
+</div>"""
     )
 
     grade.change(
